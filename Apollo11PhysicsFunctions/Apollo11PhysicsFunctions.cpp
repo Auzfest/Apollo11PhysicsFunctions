@@ -35,8 +35,7 @@ using namespace std;
  // your function goes here
 double computeDistance(double s, double v, double a, double t)
 {
-    s = s + (v * t) + (0.5 * a * pow(t, 2));
-    return s;
+    return s + v * t + 0.5 * a * t * t;
 }
 
 /**************************************************
@@ -53,7 +52,7 @@ double computeDistance(double s, double v, double a, double t)
  // your function goes here
 double computeAcceleration(double f, double m)
 {
-    double a = 45000 / 15103;
+    double a = f / m;
     return a;
 }
 
@@ -99,7 +98,7 @@ double computeVelocity(double v, double a, double t)
  // your function goes here
 double computeVertical(double a, double total)
 {
-    double y;
+    double y = total * cos(a);
     return y;
 }
 
@@ -124,7 +123,7 @@ double computeVertical(double a, double total)
  // your function goes here
 double computeHorizontal(double a, double total)
 {
-    double x;
+    double x = total * sin(a);;
     return x;
 }
 
@@ -150,7 +149,7 @@ double computeHorizontal(double a, double total)
  // your function goes here
 double computeTotal(double x, double y)
 {
-    double total = sqrt(pow(x, 2) + pow(y, 2));
+    double total = sqrt(x * x + y * y);
     return total;
 }
 
@@ -164,9 +163,9 @@ double computeTotal(double x, double y)
  *     r : radians from 0 to 2pi
  **************************************************/
  // your function goes here
-double radiansToDegrees(double d)
+double degreesToRadians(double d)
 {
-    double r = d / 360 * (2 * M_PI);
+    double r = d / 360 * (2 * 3.14159265358979);
     return r;
 }
 
@@ -179,6 +178,13 @@ double radiansToDegrees(double d)
  *      response : the user's response
  ***************************************************/
  // your function goes here
+double prompt(string message)
+{
+    double value;
+    cout << message;
+    cin >> value;
+    return value;
+}
 
  /****************************************************************
   * MAIN
@@ -203,19 +209,39 @@ int main()
 
     // Go through the simulator five times
       // your code goes here
-    double a = computeAcceleration(f, m);
-    double v = computeVelocity(v, a, t);
-    double x = computeHorizontal();
-    double y = computeVertical();
-    double total = computeTotal(x, y);
+    aRadians = degreesToRadians(aDegrees);
 
-      // Output
-    cout.setf(ios::fixed | ios::showpoint);
-    cout.precision(2);
-    cout << "\tNew position:   (" << x << ", " << y << ")m\n";
-    cout << "\tNew velocity:   (" << dx << ", " << dy << ")m/s\n";
-    cout << "\tTotal velocity:  " << v << "m/s\n\n";
+    // Calculate acceleration due to thrust
+    accelerationThrust = computeAcceleration(THRUST, WEIGHT);
 
+    // Calculate horizontal and vertical accelerations due to thrust
+    ddxThrust = computeHorizontal(aRadians, accelerationThrust);
+    ddyThrust = computeVertical(aRadians, accelerationThrust);
+
+    // Perform calculations in a loop (5 iterations)
+    for (int count = 0; count < 5; ++count)
+    {
+        // Update velocity using acceleration
+        dx = computeVelocity(dx, ddxThrust, t);
+        dy = computeVelocity(dy, ddyThrust + GRAVITY, t);
+
+        // Update position using velocity
+        x = computeDistance(x, dx, ddxThrust, t);
+        y = computeDistance(y, dy, ddyThrust + GRAVITY, t);
+
+        // Calculate the total velocity
+        v = computeTotal(dx, dy);
+
+
+
+
+        // Output
+        cout.setf(ios::fixed | ios::showpoint);
+        cout.precision(2);
+        cout << "\tNew position:   (" << x << ", " << y << ")m\n";
+        cout << "\tNew velocity:   (" << dx << ", " << dy << ")m/s\n";
+        cout << "\tTotal velocity:  " << v << "m/s\n\n";
+    }
 
     return 0;
 }
