@@ -1,14 +1,15 @@
 /*************************************************************
  * 1. Name:
- *      Austin Barnes
+ *      Austin Barnes and Cayden Park
  * 2. Assignment Name:
  *      Practice 02: Physics simulator
  * 3. Assignment Description:
  *      Compute how the Apollo lander will move across the screen
  * 4. What was the hardest part? Be as specific as possible.
- *      -a paragraph or two about how the assignment went for you-
+ *      The assignment went well for us. The hardest part was getting
+ *      the LM to land.
  * 5. How long did it take for you to complete the assignment?
- *      -total time in hours: reading the assignment, submitting, etc.
+ *      2 hours
  **************************************************************/
 
 #include <iostream>  // for CIN and COUT
@@ -196,9 +197,7 @@ int main()
     double dx = prompt("What is your horizontal velocity (m/s)? ");
     double dy = prompt("What is your vertical velocity (m/s)? ");
     double y = prompt("What is your altitude (m)? ");
-    double x = prompt("What is your position (m)? ");
     double aDegrees = prompt("What is the angle of the LM where 0 is up (degrees)? ");
-    double t = prompt("What is the time interval (s)? ");
     double aRadians;            // Angle in radians
     double accelerationThrust;  // Acceleration due to thrust 
     double ddxThrust;           // Horizontal acceleration due to thrust
@@ -209,38 +208,43 @@ int main()
 
     // Go through the simulator five times
       // your code goes here
-    aRadians = degreesToRadians(aDegrees);
+    double x = 0;
+    double t = 1;
 
-    // Calculate acceleration due to thrust
-    accelerationThrust = computeAcceleration(THRUST, WEIGHT);
+    while (y > 0){
+        aRadians = degreesToRadians(aDegrees);
 
-    // Calculate horizontal and vertical accelerations due to thrust
-    ddxThrust = computeHorizontal(aRadians, accelerationThrust);
-    ddyThrust = computeVertical(aRadians, accelerationThrust);
+        // Calculate acceleration due to thrust
+        accelerationThrust = computeAcceleration(THRUST, WEIGHT);
 
-    // Perform calculations in a loop (5 iterations)
-    for (int count = 0; count < 5; ++count)
-    {
-        // Update velocity using acceleration
-        dx = computeVelocity(dx, ddxThrust, t);
-        dy = computeVelocity(dy, ddyThrust + GRAVITY, t);
+        // Calculate horizontal and vertical accelerations due to thrust
+        ddxThrust = computeHorizontal(aRadians, accelerationThrust);
+        ddyThrust = computeVertical(aRadians, accelerationThrust);
 
-        // Update position using velocity
-        x = computeDistance(x, dx, ddxThrust, t);
-        y = computeDistance(y, dy, ddyThrust + GRAVITY, t);
+        // Perform calculations in a loop (5 iterations)
+        for (int count = 0; count < 5; ++count)
+        {
+            // Update velocity using acceleration
+            dx = computeVelocity(dx, ddxThrust, t);
+            dy = computeVelocity(dy, ddyThrust + GRAVITY, t);
 
-        // Calculate the total velocity
-        v = computeTotal(dx, dy);
+            // Update position using velocity
+            x = computeDistance(x, dx, ddxThrust, t);
+            y = computeDistance(y, dy, ddyThrust + GRAVITY, t);
+
+            // Calculate the total velocity
+            v = computeTotal(dx, dy);
 
 
-
-
-        // Output
-        cout.setf(ios::fixed | ios::showpoint);
-        cout.precision(2);
-        cout << "\tNew position:   (" << x << ", " << y << ")m\n";
-        cout << "\tNew velocity:   (" << dx << ", " << dy << ")m/s\n";
-        cout << "\tTotal velocity:  " << v << "m/s\n\n";
+            // Output
+            cout.setf(ios::fixed | ios::showpoint);
+            cout.precision(2);
+            cout << "x,y: (" << x << ", " << y << ")m dx,dy: (" << dx << ", " << dy << ")m/s speed: " << v << "m/s angle: "<< aDegrees <<"deg\n";
+            // cout << "\tNew position:   (" << x << ", " << y << ")m\n";
+            // cout << "\tNew velocity:   (" << dx << ", " << dy << ")m/s\n";
+            // cout << "\tTotal velocity:  " << v << "m/s\n\n";
+        }
+    aDegrees = prompt("What is the new angle of the LM where 0 is up (degrees)? ");
     }
 
     return 0;
